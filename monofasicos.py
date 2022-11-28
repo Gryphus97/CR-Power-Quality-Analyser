@@ -1,15 +1,18 @@
 import pandas as pd
+#Se crea una lista con los nombres de los archivos
 datos = []
 for i in range(56,76):
     nom = f"M-07{i}-2018"
     datos.append(nom)
 datos.remove("M-0772-2018")
+#Se crea una lista con las coordenadas correspondientes a cada archivo
 coor = []
 control = pd.read_csv('Test1.csv', delimiter=',', decimal=".")
 for x in range(0,1264):
     for i in range(0,19):
         if control.iloc[x, 0] == datos[i]:
             coor.append(control.iloc[x, 8])
+#Se transforman las coordenadas al formato requerido por Qgis
 n_listaN = []
 n_listaO = []
 for i in range(0,19):
@@ -26,6 +29,7 @@ for i in range(0, 19):
         for i in range(0,9):
             lista.pop(0)
     n_listaO.append(''.join(lista))
+#Se convierten los datos en un dataframe y se unen todos los archivos
 list_data = []
 i = 0
 for filename in datos:
@@ -35,7 +39,7 @@ for filename in datos:
     list_data.append(data)
     i+=1
 listo = pd.concat(list_data, ignore_index=True)
-
+#Se seleccionan los datos de cada hora
 datos_completos = pd.DataFrame(listo)
 datos_completos = datos_completos.set_index('Time', append=False, drop=False)
 fecha_in = []
@@ -47,12 +51,13 @@ for i in range(0, 19960):
                 for m in range(0,10):
                     if lista[12] == str(h) and lista[13] == str(m) and lista[15] == "0" and lista[16] == "0":
                         fecha_in.append(''.join(lista))
-
+#Se escogen las columnas requeridas para el analisis
 datos_tiempo = datos_completos.loc[fecha_in,["Time", "lat", "lon","Phase C-A Min Volts"]]
 final = datos_completos.loc[fecha_in,"Time"]
 final = final.to_numpy().tolist()
 datos_tiempo.insert(1, "End", final, allow_duplicates=False)
 tamaño = datos_tiempo.loc[:,"Time"].size
+#Se convierten los datos de las fechas en uno que Qgis pueda interpretar
 n_listaT = []
 n_listaE = []
 for i in range(0, tamaño):
@@ -74,6 +79,7 @@ for i in range(0, tamaño):
 
 datos_tiempo.loc[:,"Time"] = n_listaT
 datos_tiempo.loc[:,"End"] = n_listaE
+#Se clasifican los voltajes minimos
 n9 = []
 n8 = []
 for i in range (0, 59917):
@@ -81,7 +87,7 @@ for i in range (0, 59917):
         n9.append(datos_tiempo.iloc[i,:])
     else:
         n8.append(datos_tiempo.iloc[i,:])
-
+#Se crean los archivos que se utilizarán en Qgis
 n8 = pd.DataFrame(n8)
 n9 = pd.DataFrame(n9)
 n8.to_excel(r'n8.xlsx', index = False)
