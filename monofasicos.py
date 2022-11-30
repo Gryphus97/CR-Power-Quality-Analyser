@@ -76,17 +76,17 @@ for i in range(0, tamaño):
         lista.pop(5)
         lista[4] = "-"
     n_listaE.append(''.join(lista))
-
 datos_tiempo.loc[:,"Time"] = n_listaT
 datos_tiempo.loc[:,"End"] = n_listaE
+datos_finales = datos_tiempo.drop_duplicates()
 #Se clasifican los voltajes minimos
 n9 = []
 n8 = []
-for i in range (0, 59917):
-    if float(datos_tiempo.iloc[i,4]) > 113:
-        n9.append(datos_tiempo.iloc[i,:])
+for i in range (0, 3327):
+    if float(datos_finales.iloc[i,4]) > 113:
+        n9.append(datos_finales.iloc[i,:])
     else:
-        n8.append(datos_tiempo.iloc[i,:])
+        n8.append(datos_finales.iloc[i,:])
 #Se crean los archivos que se utilizarán en Qgis
 n8 = pd.DataFrame(n8)
 n9 = pd.DataFrame(n9)
