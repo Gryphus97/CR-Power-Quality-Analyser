@@ -82,16 +82,21 @@ datos_finales = datos_tiempo.drop_duplicates()
 #Se clasifican los voltajes minimos
 n9 = []
 n8 = []
+n7 = []
 for i in range (0, 3327):
-    if float(datos_finales.iloc[i,4]) > 113:
+    if float(datos_finales.iloc[i,4]) > 120*1.13:
         n9.append(datos_finales.iloc[i,:])
+    elif float(datos_finales.iloc[i,4]) > 120*1.09 or float(datos_finales.iloc[i,4]) <= 120*1.13:
+        n8.append(datos_finales.iloc[i, :])
     else:
-        n8.append(datos_finales.iloc[i,:])
+        n7.append(datos_finales.iloc[i,:])
 #Se crean los archivos que se utilizarán en Qgis
 n8 = pd.DataFrame(n8)
 n9 = pd.DataFrame(n9)
+n7 = pd.DataFrame(n9)
 n8.to_excel(r'n8.xlsx', index = False)
 n9.to_excel(r'n9.xlsx', index = False)
+n7.to_excel(r'n7.xlsx', index = False)
 import jpype
 import asposecells
 jpype.startJVM()
@@ -100,7 +105,8 @@ from asposecells.api import Workbook, SaveFormat
 # Create a Workbook object with Excel file's path
 workbook8 =  Workbook("n8.xlsx")
 workbook9 =  Workbook("n9.xlsx")
-
+workbook7 =  Workbook("n7.xlsx")
 # Save XLSX as CSV
 workbook8.save("n8.csv" , SaveFormat.CSV)
 workbook9.save("n9.csv" , SaveFormat.CSV)
+workbook9.save("n7.csv" , SaveFormat.CSV)
