@@ -82,6 +82,7 @@ for i in range (0, 15104):
 
 v240 = pd.DataFrame(v240)
 v480 = pd.DataFrame(v480)
+ni6 = []
 ni5 = []
 ni4 = []
 for i in range (0, 4032):
@@ -89,21 +90,30 @@ for i in range (0, 4032):
         ni5.append(v480.iloc[i,:])
     else:
         ni4.append(v480.iloc[i, :])
+for i in range (0, 11072):
+    if (float(v240.iloc[i,3]) or float(v240.iloc[i,4])) > 120*1.05 and (float(v240.iloc[i,3]) or float(v240.iloc[i,4])) <= 120*1.07:
+        ni6.append(v240.iloc[i, :])
+    elif (float(v240.iloc[i,3]) or float(v240.iloc[i,4])) >= 120*0.95 and (float(v240.iloc[i,3]) or float(v240.iloc[i,4])) <= 120*1.05:
+        ni5.append(v240.iloc[i,:])
+    else:
+        ni4.append(v240.iloc[i, :])
 ni4 = pd.DataFrame(ni4)
 ni5 = pd.DataFrame(ni5)
+ni6 = pd.DataFrame(ni6)
 ni4.to_excel(r'tn4.xlsx', index = False)
 ni5.to_excel(r'tn5.xlsx', index = False)
-v240.to_excel(r'240.xlsx', index = False)
+ni6.to_excel(r'tn6.xlsx', index = False)
 import jpype
 import asposecells
 jpype.startJVM()
 from asposecells.api import Workbook, SaveFormat
 
 
-workbook8 =  Workbook("240.xlsx")
-workbook9 =  Workbook("480.xlsx")
+workbook4 =  Workbook("tn4.xlsx")
+workbook5 =  Workbook("tn5.xlsx")
+workbook6 =  Workbook("tn6.xlsx")
 
 
-workbook8.save("240.csv" , SaveFormat.CSV)
-workbook9.save("480.csv" , SaveFormat.CSV)
-
+workbook4.save("tn4.csv" , SaveFormat.CSV)
+workbook5.save("tn5.csv" , SaveFormat.CSV)
+workbook6.save("tn6.csv" , SaveFormat.CSV)
