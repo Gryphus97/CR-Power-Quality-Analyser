@@ -102,11 +102,11 @@ import asposecells
 jpype.startJVM()
 from asposecells.api import Workbook, SaveFormat
 
-# Create a Workbook object with Excel file's path
+#Se crea un objeto Workbook para la creaci]on del .csv
 workbook8 =  Workbook("n8.xlsx")
 workbook9 =  Workbook("n9.xlsx")
 workbook7 =  Workbook("n7.xlsx")
-# Save XLSX as CSV
+# Se guarda el .xlsx como .csv
 workbook8.save("n8.csv" , SaveFormat.CSV)
 workbook9.save("n9.csv" , SaveFormat.CSV)
 workbook9.save("n7.csv" , SaveFormat.CSV)
