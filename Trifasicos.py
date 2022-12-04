@@ -72,34 +72,38 @@ for i in range(0, tamaño):
     timei[i] =''.join(lista)
 print(datos_tiempo)
 datos_tiempo.loc[:,"Tiempo"] = timei
-n9 = []
-n8 = []
-n7 = []
+v480 = []
+v240 = []
 for i in range (0, 15104):
     if float(datos_tiempo.iloc[i,3]) > 120*1.13 and float(datos_tiempo.iloc[i,4]) > 120*1.13 and float(datos_tiempo.iloc[i,5]) > 120*1.13:
-        n9.append(datos_tiempo.iloc[i,:])
-    elif (float(datos_tiempo.iloc[i,3]) and float(datos_tiempo.iloc[i,4]) and float(datos_tiempo.iloc[i,5])) <= 120*1.13 or (float(datos_tiempo.iloc[i,3]) and float(datos_tiempo.iloc[i,4]) and float(datos_tiempo.iloc[i,5]))> 120*1.09:
-        n8.append(datos_tiempo.iloc[i, :])
+        v480.append(datos_tiempo.iloc[i,:])
     else:
-        n7.append(datos_tiempo.iloc[i,:])
-n7= pd.DataFrame(n7)
-n8 = pd.DataFrame(n8)
-n9 = pd.DataFrame(n9)
-n7.to_excel(r'tn7.xlsx', index = False)
-n8.to_excel(r'tn8.xlsx', index = False)
-n9.to_excel(r'tn9.xlsx', index = False)
+        v240.append(datos_tiempo.iloc[i, :])
+
+v240 = pd.DataFrame(v240)
+v480 = pd.DataFrame(v480)
+ni5 = []
+ni4 = []
+for i in range (0, 4032):
+    if (float(v480.iloc[i,3]) or float(v480.iloc[i,4]) or float(v480.iloc[i,5])) >= 277*0.95 and (float(v480.iloc[i,3]) or float(v480.iloc[i,4]) or float(v480.iloc[i,5])) <= 277*1.05:
+        ni5.append(v480.iloc[i,:])
+    else:
+        ni4.append(v480.iloc[i, :])
+ni4 = pd.DataFrame(ni4)
+ni5 = pd.DataFrame(ni5)
+ni4.to_excel(r'tn4.xlsx', index = False)
+ni5.to_excel(r'tn5.xlsx', index = False)
+v240.to_excel(r'240.xlsx', index = False)
 import jpype
 import asposecells
 jpype.startJVM()
 from asposecells.api import Workbook, SaveFormat
 
-workbook7 =  Workbook("tn7.xlsx")
-workbook8 =  Workbook("tn8.xlsx")
-workbook9 =  Workbook("tn9.xlsx")
+
+workbook8 =  Workbook("240.xlsx")
+workbook9 =  Workbook("480.xlsx")
 
 
-workbook7.save("tn7.csv" , SaveFormat.CSV)
-workbook8.save("tn8.csv" , SaveFormat.CSV)
-workbook9.save("tn9.csv" , SaveFormat.CSV)
-
+workbook8.save("240.csv" , SaveFormat.CSV)
+workbook9.save("480.csv" , SaveFormat.CSV)
 
