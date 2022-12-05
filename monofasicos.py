@@ -57,33 +57,55 @@ for i in range(0, tamaño):
 datos_tiempo.loc[:,"Time"] = n_listaT
 datos_finales = datos_tiempo.drop_duplicates()
 #Se clasifican los voltajes minimos
-n9 = []
-n8 = []
 n7 = []
-for i in range (0, 3327):
-    if float(datos_finales.iloc[i,3]) > 120*1.13:
-        n9.append(datos_finales.iloc[i,:])
-    elif float(datos_finales.iloc[i,3]) > 120*1.09 or float(datos_finales.iloc[i,3]) <= 120*1.13:
-        n8.append(datos_finales.iloc[i, :])
+n6 = []
+n5 = []
+n4 = []
+n3 = []
+n2 = []
+n1 = []
+for i in range (0, 19960):
+    if float(datos_finales.iloc[i,3]) > 120*1.07 and float(datos_finales.iloc[i,3]) <= 120*1.09:
+        n7.append(datos_finales.iloc[i, :])
+    elif float(datos_finales.iloc[i,3]) > 120*1.05 and float(datos_finales.iloc[i,3]) <= 120*1.07:
+        n6.append(datos_finales.iloc[i, :])
+    elif float(datos_finales.iloc[i,3]) >= 120*0.95 and float(datos_finales.iloc[i,3]) <= 120*1.05:
+        n5.append(datos_finales.iloc[i, :])
+    elif float(datos_finales.iloc[i,3]) > 120*0.93 and float(datos_finales.iloc[i,3]) < 120*0.95:
+        n4.append(datos_finales.iloc[i, :])
+    elif float(datos_finales.iloc[i,3]) > 120*0.91 and float(datos_finales.iloc[i,3]) <= 120*0.93:
+        n3.append(datos_finales.iloc[i, :])
+    elif float(datos_finales.iloc[i,3]) > 120*0.87 and float(datos_finales.iloc[i,3]) <= 120*0.91:
+        n2.append(datos_finales.iloc[i, :])
     else:
-        n7.append(datos_finales.iloc[i,:])
+        n1.append(datos_finales.iloc[i,:])
 #Se crean los archivos que se utilizarán en Qgis
-n8 = pd.DataFrame(n8)
-n9 = pd.DataFrame(n9)
-n7 = pd.DataFrame(n9)
-n8.to_excel(r'n8.xlsx', index = False)
-n9.to_excel(r'n9.xlsx', index = False)
+n7 = pd.DataFrame(n7)
+n6 = pd.DataFrame(n6)
+n5 = pd.DataFrame(n5)
+n4 = pd.DataFrame(n4)
+n3 = pd.DataFrame(n3)
+n2 = pd.DataFrame(n2)
+n1 = pd.DataFrame(n1)
 n7.to_excel(r'n7.xlsx', index = False)
+n6.to_excel(r'n6.xlsx', index = False)
+n5.to_excel(r'n5.xlsx', index = False)
+n4.to_excel(r'n4.xlsx', index = False)
+n3.to_excel(r'n3.xlsx', index = False)
+n2.to_excel(r'n2.xlsx', index = False)
+n1.to_excel(r'n1.xlsx', index = False)
 import jpype
 import asposecells
 jpype.startJVM()
 from asposecells.api import Workbook, SaveFormat
 
 #Se crea un objeto Workbook para la creaci]on del .csv
-workbook8 =  Workbook("n8.xlsx")
-workbook9 =  Workbook("n9.xlsx")
 workbook7 =  Workbook("n7.xlsx")
+workbook6 =  Workbook("n6.xlsx")
+workbook5 =  Workbook("n5.xlsx")
+workbook4 =  Workbook("n4.xlsx")
+workbook3 =  Workbook("n3.xlsx")
+workbook2 =  Workbook("n2.xlsx")
+workbook1 =  Workbook("n1.xlsx")
 # Se guarda el .xlsx como .csv
-workbook8.save("n8.csv" , SaveFormat.CSV)
-workbook9.save("n9.csv" , SaveFormat.CSV)
-workbook9.save("n7.csv" , SaveFormat.CSV)
+workbook7.save("n7.csv" , SaveFormat.CSV)
