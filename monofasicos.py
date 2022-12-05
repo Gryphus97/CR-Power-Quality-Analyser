@@ -39,7 +39,6 @@ for filename in datos:
     list_data.append(data)
     i+=1
 listo = pd.concat(list_data, ignore_index=True)
-#Se seleccionan los datos de cada hora
 datos_completos = pd.DataFrame(listo)
 datos_completos = datos_completos.set_index('Time', append=False, drop=False)
 #Se escogen las columnas requeridas para el analisis
