@@ -42,24 +42,11 @@ listo = pd.concat(list_data, ignore_index=True)
 #Se seleccionan los datos de cada hora
 datos_completos = pd.DataFrame(listo)
 datos_completos = datos_completos.set_index('Time', append=False, drop=False)
-fecha_in = []
-for i in range(0, 19960):
-    lista = list(datos_completos.iloc[i, 0])
-    for x in range(0,10):
-        if lista[1] == str(x):
-            for h in range(0, 3):
-                for m in range(0,10):
-                    if lista[12] == str(h) and lista[13] == str(m) and lista[15] == "0" and lista[16] == "0":
-                        fecha_in.append(''.join(lista))
 #Se escogen las columnas requeridas para el analisis
-datos_tiempo = datos_completos.loc[fecha_in,["Time", "lat", "lon","Phase C-A Min Volts"]]
-final = datos_completos.loc[fecha_in,"Time"]
-final = final.to_numpy().tolist()
-datos_tiempo.insert(1, "End", final, allow_duplicates=False)
+datos_tiempo = datos_completos.loc[:,["Time", "lat", "lon","Phase C-A Min Volts"]]
 tamaño = datos_tiempo.loc[:,"Time"].size
 #Se convierten los datos de las fechas en uno que Qgis pueda interpretar
 n_listaT = []
-n_listaE = []
 for i in range(0, tamaño):
     lista = list(datos_tiempo.iloc[i, 0])
     if lista[3] == "J" and lista[4] == "u" and lista[5] == "l":
@@ -68,25 +55,16 @@ for i in range(0, tamaño):
         lista.pop(5)
         lista[4] = "-"
     n_listaT.append(''.join(lista))
-for i in range(0, tamaño):
-    lista = list(datos_tiempo.iloc[i, 1])
-    if lista[3] == "J" and lista[4] == "u" and lista[5] == "l":
-        lista[3] = "07"
-        lista.pop(4)
-        lista.pop(5)
-        lista[4] = "-"
-    n_listaE.append(''.join(lista))
 datos_tiempo.loc[:,"Time"] = n_listaT
-datos_tiempo.loc[:,"End"] = n_listaE
 datos_finales = datos_tiempo.drop_duplicates()
 #Se clasifican los voltajes minimos
 n9 = []
 n8 = []
 n7 = []
 for i in range (0, 3327):
-    if float(datos_finales.iloc[i,4]) > 120*1.13:
+    if float(datos_finales.iloc[i,3]) > 120*1.13:
         n9.append(datos_finales.iloc[i,:])
-    elif float(datos_finales.iloc[i,4]) > 120*1.09 or float(datos_finales.iloc[i,4]) <= 120*1.13:
+    elif float(datos_finales.iloc[i,3]) > 120*1.09 or float(datos_finales.iloc[i,3]) <= 120*1.13:
         n8.append(datos_finales.iloc[i, :])
     else:
         n7.append(datos_finales.iloc[i,:])
