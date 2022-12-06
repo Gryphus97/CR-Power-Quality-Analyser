@@ -1,93 +1,100 @@
 ################ Heatmap raster from code ###########################
-from qgis.core import *
-#import pandas as pf
-#from Fiona import *
+import sys
+from qgis.core import (QgsApplication,QgsProject, QgsField,QgsVectorLayer,QgsPathResolver)
+#from qgis.gui import QgsLayerTreeMapCanvasBridge
+from qgis.analysis import QgsNativeAlgorithms
+from PyQt5.QtCore import QVariant
+
+#Global
+#####################################################################
+tgt_lyr = "../Q_Tests/SHP/total_meds2022.shp"
+tgt_prj = "../Mediciones_ARESEP_QGIS/GIS_2022_Med.qgs"
+procss = '/usr/share/qgis/python/plugins'           #Change accordingly (processing plugins)
 
 
-
+#Code
+#####################################################################
+#Sets settings to standalone script
 qgs = QgsApplication.setPrefixPath("/usr", True)
 qgs = QgsApplication([], True)
 
+#Initializes qgis background
 qgs.initQgis()
 
-qgs.exitQgis()
+sys.path.append(procss)
 
+import processing           #requires prior route to work
+from processing.core.Processing import Processing
 
-#import pandas as pd
-#from datashader.tiles import render_tiles
-#import geopandas as gpd
-#import datashader as ds, pandas as pd, colorcet
-#import datashader.transfer_functions as tf
-#from PIL import ImageDraw
+##Load specified QGIS project from path
+proj_tgt = QgsProject.instance()
+proj_tgt.read(tgt_prj)
+
+#Load desired layer
+vlayer = QgsVectorLayer(tgt_lyr,"Meds_2022","ogr")
+
+#print(vlayer.fields().names())
+#Adds new virtual field to help with the heatmap
+newfld = vlayer.dataProvider()
+newfld.addAttributes([QgsField("NC_num",QVariant.Int)])
+vlayer.updateFields()
+vlayer.startEditing()
+
+features = vlayer.getFeatures()
+for f in features:
+    scale = 0
+    id=f.id()                                       #id from row
+    tipo_NC = f.attributes()[17]                    #gets value from column 17
+    if tipo_NC == 'Poca Importancia':
+        scale = 5
+    elif tipo_NC == 'Importante':
+        scale = 15
+    elif tipo_NC == 'Muy Seria':
+        scale = 30
+    attr_value={18:scale}
+    newfld.changeAttributeValues({id:attr_value})   #updates value   
+
+vlayer.commitChanges()                              #commits update (now value is not NULL)
+
+Processing.initialize()
+QgsApplication.processingRegistry().addProvider(QgsNativeAlgorithms())
+outpt = '/home/gryphus/Estructuras_datos/Proyecto_QGIS/Q_Tests/RAST/test.tiff'
+pams = {'INPUT': tgt_lyr,
+              'RADIUS':1000,
+              'RADIUS_FIELD':'',
+              'PIXEL_SIZE':50,
+              'WEIGHT_FIELD':'NC_num',
+              'KERNEL':0,
+              'DECAY':-3,
+              'OUTPUTVALUE': 1,
+              'OUTPUT':outpt}                  
+
+processing.run("qgis:heatmapkerneldensityestimation",pams)
+#For later
+#{ 'DECAY' : -3, 'INPUT' : '/home/gryphus/Estructuras_datos/Proyecto_QGIS/Q_Tests/SHP/total_meds2018.shp', 'KERNEL' : 0, 'OUTPUT' : 'TEMPORARY_OUTPUT', 'OUTPUT_VALUE' : 1, 'PIXEL_SIZE' : 50, 'RADIUS' : 500, 'RADIUS_FIELD' : None, 'WEIGHT_FIELD' : None }
+
+###
+newfld.deleteAttributes([18])       #deletes extra field
+vlayer.updateFields()
+qgs.exitQgis()                      #Frees qgis data from memory
+
 #
+##Load specified QGIS project from path
+#proj_tgt = QgsProject.instance()
+#proj_tgt.read("../Mediciones_ARESEP_QGIS/GIS_2022_Med.qgs")
 #
-#def read_uk_accidents():
-#    # Read UK Accidents Point csvs
-#    uk_accidents_1 = pd.read_csv('csvs/uk_accidents_2005_to_2007.tar.xz', low_memory=False)
-#    uk_accidents_2 = pd.read_csv('csvs/uk_accidents_2009_to_2011.tar.xz', low_memory=False)
-#    uk_accidents_3 = pd.read_csv('csvs/uk_accidents_2012_to_2014.tar.xz', low_memory=False)
+##
+##Load desired layer
+#vlayer = QgsVectorLayer(tgt_lyr,"Meds_2018_htmp","ogr")
+#if not vlayer.isValid():    #Checks if layer exists and could be loaded
+#    print("No se pudo accesar a objeto")
 #
-#    uk_accidents = pd.concat([uk_accidents_1, uk_accidents_2, uk_accidents_3])
-#
-#    # Convert Long Lat into numeric type
-#    uk_accidents['Longitude'] = pd.to_numeric(uk_accidents['Longitude'])
-#    uk_accidents['Latitude'] = pd.to_numeric(uk_accidents['Latitude'])
-#
-#    # Convert Long Lat into Point Geometry
-#    uk_accidents = gpd.GeoDataFrame(geometry = gpd.points_from_xy(x=uk_accidents['Longitude'], y=uk_accidents['Latitude']))
-#    uk_accidents = uk_accidents.set_crs('EPSG:4326')
-#
-#    # Reprojecting to 3857 coordinate system
-#    uk_accidents = uk_accidents.to_crs('EPSG:3857')
-#    uk_accidents['value'] = 1
-#    uk_accidents = uk_accidents[uk_accidents.is_valid]
-#    uk_accidents = uk_accidents[~uk_accidents.is_empty]
-#
-#    # Get x, y coordinates
-#    uk_accidents['x'] = uk_accidents.geometry.x
-#    uk_accidents['y'] = uk_accidents.geometry.y
-#
-#    df = uk_accidents[['x', 'y']]
-#
-#    return [df, tuple(uk_accidents.total_bounds)]
-#
-#def load_data_func(x_range, y_range):
-#        global df
-#        return df
-#
-#def rasterize_func(df, x_range, y_range, height, width):
-#    # aggregate
-#    cvs = ds.Canvas(x_range=x_range, y_range=y_range, plot_height=height, plot_width=width)
-#    agg = cvs.points(df, 'x', 'y')
-#    return agg
-#
-#
-#def shader_func(agg, span=None):
-#    # shader func
-#    img = tf.shade(agg, cmap=colorcet.fire, how='log')
-#    img = tf.spread(img, px=1, shape='circle', how='add', mask=None, name=None)        
-#    img = tf.set_background(img, None)
-#    return img
-#
-#
-#
-#def post_render_func(img, **kwargs):
-#    # Create tiles
-#    draw = ImageDraw.Draw(img)
-#    draw.text((5, 5), '', fill='rgb(255, 255, 255)')
-#    return img
-#
-#
-#
-#if __name__ == "__main__":
-#    global df
-#    
-#    df, map_extent = read_uk_accidents()
-#
-#    render_tiles(map_extent,
-#    levels=range(11),
-#    output_path='tiles',
-#    load_data_func=load_data_func,
-#    rasterize_func=rasterize_func,
-#    shader_func=shader_func,
-#    post_render_func=post_render_func)
+#else:                       #Else proceeds to create heatmap object
+#   heatmap = QgsHeatmapRenderer()
+#   heatmap.setRadius(50)
+#   colorrmp = QgsStyle().defaultStyle().colorRamp('Inferno')
+#   heatmap.setColorRamp(colorrmp)
+#   vlayer.setRenderer(heatmap)
+#   vlayer.triggerRepaint()
+#   print("Almost ready")
+#   proj_tgt.addMapLayer(vlayer)    #add final product to project
