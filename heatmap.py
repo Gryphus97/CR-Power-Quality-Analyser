@@ -5,13 +5,14 @@ import sys
 #####################################################################
 tgt_lyr = "../Q_Tests/SHP/total_meds2018.shp"
 tgt_prj = "../Mediciones_ARESEP_QGIS/GIS_2022_Med.qgs"
-outpt = '/home/gryphus/Estructuras_datos/Proyecto_QGIS/Q_Tests/RAST/test.tiff'
+outpt = '/home/gryphus/Estructuras_datos/Proyecto_QGIS/Q_Tests/RAST/test.tiff' #archivo destino
 
-procss     = '/usr/share/qgis/python/plugins'            #Change accordingly (processing plugins)
-qgis_libs  = '/usr/lib/python3/dist-packages'         #Change accordingly (QGIS core libraries)
+procss     = '/usr/share/qgis/python/plugins'            #Especificar (processing plugins)
+qgis_libs  = '/usr/lib/python3/dist-packages'            #Especificar (QGIS core libraries)
 qgis_libs2 = '/usr/lib'
 
-sys.path.append(procss)                              #add elements to python path
+#Como no son propias de Python, se deben indicar por aparte estas librerias
+sys.path.append(procss)                                  #add elements to python path
 sys.path.append(qgis_libs)
 sys.path.append(qgis_libs2)
 
@@ -20,51 +21,50 @@ from qgis.analysis import QgsNativeAlgorithms
 from PyQt5.QtCore import QVariant
 import processing        
 from processing.core.Processing import Processing
-#from qgis.gui import QgsLayerTreeMapCanvasBridge
 
 #Code
 #####################################################################
-#Sets settings to standalone script
 
-qgs = QgsApplication.setPrefixPath("/usr", True)
+#Se crea simula una ejecución de qgis
+QgsApplication.setPrefixPath("/usr", True)
 qgs = QgsApplication([], True)
 
-#Initializes qgis background
+#Se inicializa, por lo que ya se tiene acceso a objetos del programa
 qgs.initQgis()
 
-##Load specified QGIS project from path
+#Se carga proyecto
 proj_tgt = QgsProject.instance()
 proj_tgt.read(tgt_prj)
 
-#Load desired layer
+#Se carga capa 
 vlayer = QgsVectorLayer(tgt_lyr,"Meds_2022","ogr")
 
-#print(vlayer.fields().names())
-#Adds new virtual field to help with the heatmap
+#Se crea nuevo campo temporal
 newfld = vlayer.dataProvider()
 newfld.addAttributes([QgsField("NC_num",QVariant.Int)])
-vlayer.updateFields()
+vlayer.updateFields()   #inserte campo vacío
 vlayer.startEditing()
 
-features = vlayer.getFeatures()
+features = vlayer.getFeatures()     #Se obtienen características de registros
 for f in features:
-    scale = 0
+    scale = 0                       #por defecto no hay peso
     id=f.id()                                       #id from row
-    tipo_NC = f.attributes()[17]                    #gets value from column 17
+    tipo_NC = f.attributes()[17]                    #se guarda valor de tipo de NC
     if tipo_NC      == 'Poca Importancia':
         scale = 5
     elif tipo_NC    == 'Importante':
         scale = 15
     elif tipo_NC    == 'Muy Seria':
         scale = 30
-    attr_value={18:scale}
-    newfld.changeAttributeValues({id:attr_value})   #updates value   
+    attr_value={18:scale}               
+    newfld.changeAttributeValues({id:attr_value})   #se actualiza valor en campo vacío   
 
-vlayer.commitChanges()                              #commits update (now value is not NULL)
+vlayer.commitChanges()                              #se guarda cambio
 
 Processing.initialize()
-QgsApplication.processingRegistry().addProvider(QgsNativeAlgorithms())
+QgsApplication.processingRegistry().addProvider(QgsNativeAlgorithms())  #Se cargan procesos a pila
 
+#Se especifican parámetros para el heatmap
 pams = {'INPUT': tgt_lyr,
               'RADIUS':1000,
               'RADIUS_FIELD':'',
@@ -74,10 +74,10 @@ pams = {'INPUT': tgt_lyr,
               'DECAY':-3,
               'OUTPUTVALUE': 1,
               'OUTPUT':outpt}                  
-
+#Se ejecuta y guarda archivo
 processing.run("qgis:heatmapkerneldensityestimation",pams)
 
 ###
-newfld.deleteAttributes([18])       #deletes extra field
+newfld.deleteAttributes([18])       #se borra campo extra
 vlayer.updateFields()
-qgs.exitQgis()                      #Frees qgis data from memory
+qgs.exitQgis()                      #Se quitan elementos de qgis de memoria
