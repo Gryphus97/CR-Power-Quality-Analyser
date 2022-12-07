@@ -11,25 +11,25 @@ coords_src = '../test22.xlsx'                    #Input
 coords_dest= '../Q_Tests/SHP/'                   #Output
 #########################################################
 
-#Methods
+#Funciones
 #########################################################
 def Coord_extract_n_transf(df):    
-    transf = Transformer.from_crs("EPSG:4326","EPSG:5367",always_xy=True) #WGS84 to CRTM05
+    transf = Transformer.from_crs("EPSG:4326","EPSG:5367",always_xy=True) #WGS84 a CRTM05
 
-    df.insert(8,"Longitud",None,False)
+    df.insert(8,"Longitud",None,False)                  #Se insertan campos para almacenar coords
     df.insert(9,"Coordenada_Y",None,False)
     df.insert(10,"Coordenada_X",None,False)
-    df = df.rename(columns={"Coordenadas":"Latitud"})
-    index = df.index.tolist()
+    df = df.rename(columns={"Coordenadas":"Latitud"})   #Se cambia de nombre
+    index = df.index.tolist()                           #Se obtiene lista de índices
 
     for i in range(len(df.index)):
-        aux=df.at[index[i],'Latitud'].split(" ")
-        lon = "-"+aux[1][1:]
+        aux=df.at[index[i],'Latitud'].split(" ")        
+        lon = "-"+aux[1][1:]                            #Se separan coordenadas en latitud y longitud
         lat = aux[0][1:]
         df.at[index[i],'Longitud'] = lon
         df.at[index[i],'Latitud'] = lat
-        df.at[index[i],'Coordenada_X'],df.at[index[i],'Coordenada_Y'] = transf.transform(lon,lat)
-        df.at[index[i],'Fecha de instalación'] = str(df.at[index[i],'Fecha de instalación'])+' '+str(df.at[index[i],'Hora instalación'])+":00"
+        df.at[index[i],'Coordenada_X'],df.at[index[i],'Coordenada_Y'] = transf.transform(lon,lat)   #Se obtiene proyección en sistema local de CR
+        df.at[index[i],'Fecha de instalación'] = str(df.at[index[i],'Fecha de instalación'])+' '+str(df.at[index[i],'Hora instalación'])+":00"      #se guarda fecha en formato datetime
         df.at[index[i],'Fecha de desinstalación'] = str(df.at[index[i],'Fecha de desinstalación'])+' '+str(df.at[index[i],'Hora desinstalación'])+":00"
     
     df.drop(columns=['Hora instalación','Hora desinstalación','Observaciones'],inplace=True)    
@@ -37,6 +37,7 @@ def Coord_extract_n_transf(df):
     return df
 
 def Shp_generator(utility,year,df):
+    #Se define diccionario de parámetros
     schema = {
         'geometry':'Point',
         'properties':[('Consecutivo','str'),
@@ -58,10 +59,11 @@ def Shp_generator(utility,year,df):
                       ('Conformidad Artículo 10','str'),
                       ('Tipo NC Artículo 10','str')]
     }
+    #Se crea objeto de escritura a archivo de datos vectoriales
     ptShp = gl.open(coords_dest+utility+"_meds"+year+".shp",mode='w',driver='ESRI Shapefile',schema = schema, crs = "EPSG:5367",encoding='utf-8')
     
     for index, row in df.iterrows():
-     #   print(index)
+        #Se específica geometría y campos al registro a guardar
         medrow = {
             'geometry':{'type':'Point',
                         'coordinates':(row['Coordenada_X'],row['Coordenada_Y'])},
@@ -85,7 +87,7 @@ def Shp_generator(utility,year,df):
                           'Tipo NC Artículo 10':row['Tipo NC Artículo 10']}
         }
         ptShp.write(medrow)
-    ptShp.close()
+    ptShp.close()       
 #Main
 #########################################################
 
