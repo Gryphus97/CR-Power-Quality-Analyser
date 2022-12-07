@@ -100,15 +100,6 @@ jpype.startJVM()
 from asposecells.api import Workbook, SaveFormat
 
 #Se crea un objeto Workbook para la creaci]on del .csv
-<<<<<<< HEAD
-workbook8 =  Workbook("./Time-lapse-mono/n8.xlsx")
-workbook9 =  Workbook("./Time-lapse-mono/n9.xlsx")
-workbook7 =  Workbook("./Time-lapse-mono/n7.xlsx")
-# Se guarda el .xlsx como .csv
-workbook8.save("./Time-lapse-mono/n8.csv" , SaveFormat.CSV)
-workbook9.save("./Time-lapse-mono/n9.csv" , SaveFormat.CSV)
-workbook9.save("./Time-lapse-mono/n7.csv" , SaveFormat.CSV)
-=======
 workbook7 =  Workbook("n7.xlsx")
 workbook6 =  Workbook("n6.xlsx")
 workbook5 =  Workbook("n5.xlsx")
@@ -118,4 +109,9 @@ workbook2 =  Workbook("n2.xlsx")
 workbook1 =  Workbook("n1.xlsx")
 # Se guarda el .xlsx como .csv
 workbook7.save("n7.csv" , SaveFormat.CSV)
->>>>>>> f2a4d50baa9890f927bb7a47d2c94fff0257de23
+workbook6.save("n6.csv" , SaveFormat.CSV)
+workbook5.save("n5.csv" , SaveFormat.CSV)
+workbook4.save("n4.csv" , SaveFormat.CSV)
+workbook3.save("n3.csv" , SaveFormat.CSV)
+workbook2.save("n2.csv" , SaveFormat.CSV)
+workbook1.save("n1.csv" , SaveFormat.CSV)
