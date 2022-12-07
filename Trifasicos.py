@@ -1,4 +1,11 @@
+import jpype
+import asposecells
+jpype.startJVM()
+from asposecells.api import Workbook, SaveFormat
 import pandas as pd
+workbook =  Workbook("Test2.xlsx")
+workbook.save("Test2.csv" , SaveFormat.CSV)
+
 datos = []
 for i in range(1,10):
     nom = f"T-000{i}-2018"
@@ -48,7 +55,6 @@ datos_completos = datos_completos.set_index('Date', append=False, drop=False)
 datos_completos['Tiempo'] = datos_completos.Date.str.cat(datos_completos.Time, sep=' ')
 datos_tiempo2 = datos_completos.loc[:,["Tiempo", "lat", "lon","'UL1_[V]'","'UL2_[V]'","'UL3_[V]'"]]
 datos_tiempo = datos_tiempo2.drop_duplicates()
-print(datos_tiempo)
 tamaño = datos_tiempo.loc[:,"Tiempo"].size
 timei =[]
 for i in range(0, tamaño):
@@ -101,20 +107,15 @@ for i in range (0, 11072):
 ni4 = pd.DataFrame(ni4)
 ni5 = pd.DataFrame(ni5)
 ni6 = pd.DataFrame(ni6)
-ni4.to_excel(r'tn4.xlsx', index = False)
-ni5.to_excel(r'tn5.xlsx', index = False)
-ni6.to_excel(r'tn6.xlsx', index = False)
-import jpype
-import asposecells
-jpype.startJVM()
-from asposecells.api import Workbook, SaveFormat
+ni4.to_excel(r'./Tri/tn4.xlsx', index = False)
+ni5.to_excel(r'./Tri/tn5.xlsx', index = False)
+ni6.to_excel(r'./Tri/tn6.xlsx', index = False)
+
+workbook4 =  Workbook("./Tri/tn4.xlsx")
+workbook5 =  Workbook("./Tri/tn5.xlsx")
+workbook6 =  Workbook("./Tri/tn6.xlsx")
 
 
-workbook4 =  Workbook("tn4.xlsx")
-workbook5 =  Workbook("tn5.xlsx")
-workbook6 =  Workbook("tn6.xlsx")
-
-
-workbook4.save("tn4.csv" , SaveFormat.CSV)
-workbook5.save("tn5.csv" , SaveFormat.CSV)
-workbook6.save("tn6.csv" , SaveFormat.CSV)
+workbook4.save("./Tri/tn4.csv" , SaveFormat.CSV)
+workbook5.save("./Tri/tn5.csv" , SaveFormat.CSV)
+workbook6.save("./Tri/tn6.csv" , SaveFormat.CSV)
