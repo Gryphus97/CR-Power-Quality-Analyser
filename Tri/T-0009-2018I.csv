@@ -1,0 +1,4 @@
+0,Evento,Hora inicio,dato des,Valor máximo,Hora final,segundo dat,Duración
+1,Interrupci�n voltaje UL2,06.02.2018 01:27:56,129,0.025,06.02.2018 01:27:58,403,2s 273ms
+2,Interrupci�n voltaje UL1,06.02.2018 01:27:56,146,0.146,06.02.2018 01:27:58,403,2s 256ms
+3,Interrupci�n voltaje UL3,06.02.2018 01:27:56,154,0.052,06.02.2018 01:27:58,403,2s 248ms

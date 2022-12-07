@@ -33,7 +33,7 @@ for i in range(0, 19):
 list_data = []
 i = 0
 for filename in datos:
-    data = pd.read_csv(f"{filename}.csv")
+    data = pd.read_csv(f"./Mono/{filename}.csv")
     data.insert(2, "lat", n_listaN[i], allow_duplicates=False)
     data.insert(3, "lon", n_listaO[i], allow_duplicates=False)
     list_data.append(data)
@@ -103,10 +103,10 @@ jpype.startJVM()
 from asposecells.api import Workbook, SaveFormat
 
 #Se crea un objeto Workbook para la creaci]on del .csv
-workbook8 =  Workbook("n8.xlsx")
-workbook9 =  Workbook("n9.xlsx")
-workbook7 =  Workbook("n7.xlsx")
+workbook8 =  Workbook("./Time-lapse-mono/n8.xlsx")
+workbook9 =  Workbook("./Time-lapse-mono/n9.xlsx")
+workbook7 =  Workbook("./Time-lapse-mono/n7.xlsx")
 # Se guarda el .xlsx como .csv
-workbook8.save("n8.csv" , SaveFormat.CSV)
-workbook9.save("n9.csv" , SaveFormat.CSV)
-workbook9.save("n7.csv" , SaveFormat.CSV)
+workbook8.save("./Time-lapse-mono/n8.csv" , SaveFormat.CSV)
+workbook9.save("./Time-lapse-mono/n9.csv" , SaveFormat.CSV)
+workbook9.save("./Time-lapse-mono/n7.csv" , SaveFormat.CSV)

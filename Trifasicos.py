@@ -36,7 +36,7 @@ for i in range(0, 15):
 list_data = []
 i = 0
 for filename in datos:
-    data = pd.read_csv(f"{filename}.csv")
+    data = pd.read_csv(f"./Tri/{filename}.csv")
     data.insert(2, "lat", n_listaN[i], allow_duplicates=False)
     data.insert(3, "lon", n_listaO[i], allow_duplicates=False)
     list_data.append(data)
@@ -70,6 +70,7 @@ for i in range(0, tamaño):
     lista[5] = m
     lista.pop(6)
     timei[i] =''.join(lista)
+    
 print(datos_tiempo)
 datos_tiempo.loc[:,"Tiempo"] = timei
 v480 = []
